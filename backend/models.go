@@ -22,10 +22,10 @@ var statuses = map[string]bool{
 
 func (t *Task) Validate() error {
 	if t.Title == "" {
-		return errors.New("Título é obrigatório")
+		return errors.New("título é obrigatório")
 	}
 	if !statuses[t.Status] {
-		return errors.New("Status inválido")
+		return errors.New("status inválido")
 	}
 	return nil
 }
