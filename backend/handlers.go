@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -40,4 +41,51 @@ func tasksHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Erro no enconder", http.StatusInternalServerError)
 		}
 	}
+}
+
+func taskHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodPut:
+		var update Task
+		idStr := r.URL.Path[len("/api/tasks/"):]
+		id, err := strconv.ParseInt(idStr, 10, 64)
+		index := findTaskById(id)
+		if index == -1 {
+			http.Error(w, "Id não encontrado", http.StatusNotFound)
+			return
+		}
+		if err != nil {
+			http.Error(w, "Erro convertendo string para int", http.StatusInternalServerError)
+			return
+		}
+
+		if err := json.NewDecoder(r.Body).Decode(&update); err != nil {
+			http.Error(w, "JSON invalido", http.StatusBadRequest)
+			return
+		}
+
+		if update.Title != "" {
+			tasks[index].Title = update.Title
+		}
+		if update.Status != "" {
+			tasks[index].Status = update.Status
+		}
+		if update.Description != "" {
+			tasks[index].Description = update.Description
+		}
+
+		tasks[index].UpdatedAt = time.Now()
+
+		w.WriteHeader(http.StatusNoContent)
+		w.Header().Set("Content-Type", "application/json")
+	}
+}
+
+func findTaskById(id int64) int {
+	for index, task := range tasks {
+		if task.ID == id {
+			return index
+		}
+	}
+	return -1
 }

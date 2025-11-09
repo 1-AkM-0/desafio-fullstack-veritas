@@ -113,3 +113,42 @@ func TestPOSTTasks(t *testing.T) {
 		}
 	})
 }
+
+func TestUPDATETaks(t *testing.T) {
+	t.Run("PUT com id válido", func(t *testing.T) {
+		resetTasks()
+
+		tasks = append(tasks, Task{ID: 1, Title: "Task que vai ser atualizada", Description: "", Status: "A Fazer"})
+
+		body := []byte(`{"status":"Em Progresso"}`)
+
+		req, _ := http.NewRequest("PUT", "/api/tasks/1", bytes.NewBuffer(body))
+		req.Header.Set("Content-Type", "application/json")
+
+		rr := httptest.NewRecorder()
+		handler := http.HandlerFunc(taskHandler)
+		handler.ServeHTTP(rr, req)
+
+		if status := rr.Code; status != http.StatusNoContent {
+			t.Errorf("handler retornou %v esperado %v", status, http.StatusNoContent)
+		}
+	})
+	t.Run("PUT com id inválido", func(t *testing.T) {
+		resetTasks()
+
+		tasks = append(tasks, Task{ID: 1, Title: "Task que vai ser atualizada", Description: "", Status: "A Fazer"})
+
+		body := []byte(`{"status":"Em Progresso"}`)
+
+		req, _ := http.NewRequest("PUT", "/api/tasks/2", bytes.NewBuffer(body))
+		req.Header.Set("Content-Type", "application/json")
+
+		rr := httptest.NewRecorder()
+		handler := http.HandlerFunc(taskHandler)
+		handler.ServeHTTP(rr, req)
+
+		if status := rr.Code; status != http.StatusNotFound {
+			t.Errorf("handler retornou %v esperado %v", status, http.StatusNotFound)
+		}
+	})
+}
