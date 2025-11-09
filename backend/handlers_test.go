@@ -152,3 +152,37 @@ func TestUPDATETaks(t *testing.T) {
 		}
 	})
 }
+
+func TestDELETETaks(t *testing.T) {
+	t.Run("DELETE task id válido", func(t *testing.T) {
+		resetTasks()
+		tasks = append(tasks, Task{ID: 1, Title: "Task que vai ser deletada", Description: "", Status: "A Fazer"})
+
+		req, _ := http.NewRequest("DELETE", "/tasks/1", nil)
+
+		rr := httptest.NewRecorder()
+		handler := http.HandlerFunc(taskHandler)
+		handler.ServeHTTP(rr, req)
+
+		if status := rr.Code; status != http.StatusNoContent {
+			t.Errorf("handler retornou %v esperado %v", status, http.StatusNoContent)
+		}
+		if len(tasks) != 0 {
+			t.Errorf("recebido %d tasks esperado 0", len(tasks))
+		}
+	})
+	t.Run("DELETE task id inválido", func(t *testing.T) {
+		resetTasks()
+		tasks = append(tasks, Task{ID: 1, Title: "Task que vai ser deletada", Description: "", Status: "A Fazer"})
+
+		req, _ := http.NewRequest("DELETE", "/tasks/2", nil)
+
+		rr := httptest.NewRecorder()
+		handler := http.HandlerFunc(taskHandler)
+		handler.ServeHTTP(rr, req)
+
+		if status := rr.Code; status != http.StatusNotFound {
+			t.Errorf("handler retornou %v esperado %v", status, http.StatusNotFound)
+		}
+	})
+}

@@ -79,7 +79,21 @@ func taskHandler(w http.ResponseWriter, r *http.Request) {
 
 		tasks[index].UpdatedAt = time.Now()
 
-		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNoContent)
+
+	case http.MethodDelete:
+		idStr := r.URL.Path[len("/tasks/"):]
+		id, err := strconv.ParseInt(idStr, 10, 64)
+		index := findTaskById(id)
+		if index == -1 {
+			http.Error(w, "Id não encontrado", http.StatusNotFound)
+			return
+		}
+		if err != nil {
+			http.Error(w, "Erro convertendo string para int", http.StatusInternalServerError)
+			return
+		}
+		tasks = append(tasks[:index], tasks[index+1:]...)
 		w.WriteHeader(http.StatusNoContent)
 	}
 }
