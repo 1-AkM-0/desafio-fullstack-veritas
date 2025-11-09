@@ -17,7 +17,7 @@ func TestGetTask(t *testing.T) {
 	t.Run("Get sem tasks", func(t *testing.T) {
 		resetTasks()
 
-		req, _ := http.NewRequest("GET", "/api/tasks", nil)
+		req, _ := http.NewRequest("GET", "/tasks", nil)
 
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(tasksHandler)
@@ -45,7 +45,7 @@ func TestGetTask(t *testing.T) {
 
 		want := []Task{{ID: 1, Title: "Passar no desafio", Description: "passar no desafio da veritas", Status: "Em Progresso"}, {ID: 2, Title: "Nao sei", Description: "To sem criatividade", Status: "Concluído"}}
 		tasks = want
-		req, _ := http.NewRequest("GET", "/api/tasks", nil)
+		req, _ := http.NewRequest("GET", "/tasks", nil)
 
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(tasksHandler)
@@ -75,7 +75,7 @@ func TestPOSTTasks(t *testing.T) {
 
 		taskPayload := []byte(`{"title":"Minha task de teste", "description":"Teste", "status":"A Fazer"}`)
 
-		req, _ := http.NewRequest("POST", "/api/tasks", bytes.NewBuffer(taskPayload))
+		req, _ := http.NewRequest("POST", "/tasks", bytes.NewBuffer(taskPayload))
 
 		rr := httptest.NewRecorder()
 
@@ -84,7 +84,7 @@ func TestPOSTTasks(t *testing.T) {
 		handler.ServeHTTP(rr, req)
 		task := tasks[0]
 		if status := rr.Code; status != http.StatusCreated {
-			t.Errorf("handler retornou %q esperado %q ", status, http.StatusCreated)
+			t.Errorf("handler retornou %v esperado %v ", status, http.StatusCreated)
 		}
 		if err := task.Validate(); err != nil {
 			t.Errorf("esperado erro de validação, mas nao retornou nada")
@@ -98,7 +98,7 @@ func TestPOSTTasks(t *testing.T) {
 		resetTasks()
 		taskPayload := []byte(`{"title":"", "description":"", "status":""}`)
 
-		req, _ := http.NewRequest("POST", "/api/tasks", bytes.NewBuffer(taskPayload))
+		req, _ := http.NewRequest("POST", "/tasks", bytes.NewBuffer(taskPayload))
 
 		rr := httptest.NewRecorder()
 
@@ -106,7 +106,7 @@ func TestPOSTTasks(t *testing.T) {
 		handler.ServeHTTP(rr, req)
 
 		if status := rr.Code; status != http.StatusBadRequest {
-			t.Errorf("handler retornou %q esperado %q ", status, http.StatusBadRequest)
+			t.Errorf("handler retornou %v esperado %v ", status, http.StatusBadRequest)
 		}
 		if len(tasks) != 0 {
 			t.Errorf("recebido %d tasks esperado 0", len(tasks))
@@ -122,7 +122,7 @@ func TestUPDATETaks(t *testing.T) {
 
 		body := []byte(`{"status":"Em Progresso"}`)
 
-		req, _ := http.NewRequest("PUT", "/api/tasks/1", bytes.NewBuffer(body))
+		req, _ := http.NewRequest("PUT", "/tasks/1", bytes.NewBuffer(body))
 		req.Header.Set("Content-Type", "application/json")
 
 		rr := httptest.NewRecorder()
@@ -140,7 +140,7 @@ func TestUPDATETaks(t *testing.T) {
 
 		body := []byte(`{"status":"Em Progresso"}`)
 
-		req, _ := http.NewRequest("PUT", "/api/tasks/2", bytes.NewBuffer(body))
+		req, _ := http.NewRequest("PUT", "/tasks/2", bytes.NewBuffer(body))
 		req.Header.Set("Content-Type", "application/json")
 
 		rr := httptest.NewRecorder()

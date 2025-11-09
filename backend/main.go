@@ -7,8 +7,8 @@ import (
 )
 
 func main() {
-	http.HandleFunc("/api/tasks", tasksHandler)
-	http.HandleFunc("/api/tasks/", taskHandler)
+	http.HandleFunc("/tasks", tasksHandler)
+	http.HandleFunc("/tasks/", taskHandler)
 	fmt.Println("Server rodando na porta 5000")
 	log.Fatal(http.ListenAndServe(":5000", nil))
 }

@@ -47,7 +47,7 @@ func taskHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodPut:
 		var update Task
-		idStr := r.URL.Path[len("/api/tasks/"):]
+		idStr := r.URL.Path[len("/tasks/"):]
 		id, err := strconv.ParseInt(idStr, 10, 64)
 		index := findTaskById(id)
 		if index == -1 {
@@ -76,8 +76,8 @@ func taskHandler(w http.ResponseWriter, r *http.Request) {
 
 		tasks[index].UpdatedAt = time.Now()
 
-		w.WriteHeader(http.StatusNoContent)
 		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNoContent)
 	}
 }
 
