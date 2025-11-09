@@ -17,15 +17,29 @@ type Task struct {
 var statuses = map[string]bool{
 	"A Fazer":      true,
 	"Em Progresso": true,
-	"Concluídas":   true,
+	"Concluido":    true,
 }
 
-func (t *Task) Validate() error {
+func (t *Task) ValidateStatus() error {
+	if !statuses[t.Status] {
+		return errors.New("status inválido")
+	}
+	return nil
+}
+
+func (t *Task) validateTitle() error {
 	if t.Title == "" {
 		return errors.New("título é obrigatório")
 	}
-	if !statuses[t.Status] {
-		return errors.New("status inválido")
+	return nil
+}
+
+func (t *Task) Validate() error {
+	if err := t.ValidateStatus(); err != nil {
+		return err
+	}
+	if err := t.validateTitle(); err != nil {
+		return err
 	}
 	return nil
 }
