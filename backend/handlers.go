@@ -7,7 +7,10 @@ import (
 	"time"
 )
 
-var tasks = []Task{}
+var (
+	tasks  = []Task{}
+	lastID int64
+)
 
 func tasksHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
@@ -29,10 +32,11 @@ func tasksHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
+		lastID++
 		now := time.Now()
 		newTask.CreatedAt = now
 		newTask.UpdatedAt = now
-		newTask.ID = int64(len(tasks) + 1)
+		newTask.ID = lastID
 		tasks = append(tasks, newTask)
 
 		w.Header().Set("Content-Type", "application/json")
