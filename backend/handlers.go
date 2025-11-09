@@ -63,7 +63,10 @@ func taskHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "JSON invalido", http.StatusBadRequest)
 			return
 		}
-
+		if err := update.ValidateStatus(); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
 		if update.Title != "" {
 			tasks[index].Title = update.Title
 		}
