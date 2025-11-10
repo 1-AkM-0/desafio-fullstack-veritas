@@ -32,3 +32,16 @@ export const createTask = async (title, description, status) => {
     console.error("Falha ao criar task", error);
   }
 };
+
+export const deleteTask = async (id) => {
+  try {
+    const response = await fetch(`http://localhost:5000/tasks/${id}`, {
+      method: "DELETE",
+    });
+    if (!response.ok) {
+      throw new Error("A requisicão falhou");
+    }
+  } catch (error) {
+    console.error("Falha ao deletar task", error);
+  }
+};

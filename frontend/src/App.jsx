@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { getTasks, createTask } from "./services/taskService";
+import { getTasks, createTask, deleteTask } from "./services/taskService";
 
 function App() {
   const [tasks, setTasks] = useState([])
@@ -17,6 +17,10 @@ function App() {
       setTasks([...tasks, newTask])
     }
   }
+  const handleDeleteTask = async (id) => {
+    await deleteTask(id)
+    setTasks(tasks.filter((task) => task.id !== id))
+  }
 
   return (
     <>
@@ -33,6 +37,7 @@ function App() {
               {task.status}
             </div>
             -----------
+            <button type="button" onClick={() => handleDeleteTask(task.id)}>Deletar</button>
           </div>
         ))}
       </div> : <div>
