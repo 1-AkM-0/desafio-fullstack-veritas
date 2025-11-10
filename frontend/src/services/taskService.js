@@ -45,3 +45,21 @@ export const deleteTask = async (id) => {
     console.error("Falha ao deletar task", error);
   }
 };
+
+export const updateTask = async (id, updates) => {
+  console.log(updates);
+  try {
+    const response = await fetch(`http://localhost:5000/tasks/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(updates),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) {
+      throw new Error("A requisicão falhou");
+    }
+  } catch (error) {
+    console.error("Falha ao atualizar task", error);
+  }
+};

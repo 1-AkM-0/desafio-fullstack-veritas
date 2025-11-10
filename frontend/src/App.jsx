@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { getTasks, createTask, deleteTask } from "./services/taskService";
+import { getTasks, createTask, deleteTask, updateTask } from "./services/taskService";
 
 function App() {
   const [tasks, setTasks] = useState([])
@@ -21,6 +21,16 @@ function App() {
     await deleteTask(id)
     setTasks(tasks.filter((task) => task.id !== id))
   }
+  const handleUpdateTask = async (id, updates) => {
+    console.log(updates)
+    await updateTask(id, updates)
+    setTasks(prevTasks => prevTasks.map(task => {
+      if (task.id !== id) {
+        return task
+      }
+      return { ...task, ...updates }
+    }))
+  }
 
   return (
     <>
@@ -38,6 +48,7 @@ function App() {
             </div>
             -----------
             <button type="button" onClick={() => handleDeleteTask(task.id)}>Deletar</button>
+            <button type="button" onClick={() => handleUpdateTask(task.id, { status: "Em Progresso" })}>Atualizar</button>
           </div>
         ))}
       </div> : <div>
