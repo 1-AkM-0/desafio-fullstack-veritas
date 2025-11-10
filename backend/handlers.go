@@ -12,7 +12,14 @@ var (
 	lastID int64
 )
 
+func enableCors(w http.ResponseWriter) {
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
+	w.Header().Set("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+}
+
 func tasksHandler(w http.ResponseWriter, r *http.Request) {
+	enableCors(w)
 	switch r.Method {
 	case http.MethodGet:
 		w.Header().Set("Content-Type", "application/json")
@@ -48,6 +55,7 @@ func tasksHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func taskHandler(w http.ResponseWriter, r *http.Request) {
+	enableCors(w)
 	switch r.Method {
 	case http.MethodPut:
 		var update Task
