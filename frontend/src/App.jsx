@@ -31,6 +31,7 @@ function App() {
       return { ...task, ...updates }
     }))
   }
+  const tasksByStatus = (status) => tasks.filter((task) => task.status === status)
 
   return (
     <>
