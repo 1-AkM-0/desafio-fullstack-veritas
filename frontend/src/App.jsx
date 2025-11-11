@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react"
 import { getTasks, createTask, deleteTask, updateTask } from "./services/taskService";
+import Task from "./components/Task";
+import Column from "./components/Column";
 
 function App() {
   const [tasks, setTasks] = useState([])
@@ -34,30 +36,26 @@ function App() {
   const tasksByStatus = (status) => tasks.filter((task) => task.status === status)
 
   return (
-    <>
-      {tasks.length > 0 ? <div>
-        {tasks.map((task) => (
-          <div key={task.id}>
-            <div>
-              {task.title}
-            </div>
-            <div>
-              {task.description}
-            </div>
-            <div>
-              {task.status}
-            </div>
-            -----------
-            <button type="button" onClick={() => handleDeleteTask(task.id)}>Deletar</button>
-            <button type="button" onClick={() => handleUpdateTask(task.id, { status: "Em Progresso" })}>Atualizar</button>
-          </div>
-        ))}
-      </div> : <div>
-        Nao há tasks
-      </div>}
-
-      <button type="button" onClick={() => handleCreateTask()}>Criar task</button>
-    </>
+    <div className="flex justify-center gap-6 p-6 min-h-screen bg-gray-200">
+      <Column
+        title={"A Fazer"}
+        tasks={tasksByStatus("A Fazer")}
+        onUpdate={handleUpdateTask}
+        onDelete={handleDeleteTask}
+        onAdd={handleCreateTask} />
+      <Column
+        title={"Em Progresso"}
+        tasks={tasksByStatus("Em Progresso")}
+        onUpdate={handleUpdateTask}
+        onDelete={handleDeleteTask}
+      />
+      <Column
+        title={"Concluídas"}
+        tasks={tasksByStatus("Concluido")}
+        onUpdate={handleUpdateTask}
+        onDelete={handleDeleteTask}
+      />
+    </div>
   )
 }
 
