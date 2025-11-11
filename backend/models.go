@@ -15,9 +15,9 @@ type Task struct {
 }
 
 var statuses = map[string]bool{
-	"A Fazer":      true,
-	"Em Progresso": true,
-	"Concluido":    true,
+	"todo":  true,
+	"doing": true,
+	"done":  true,
 }
 
 func (t *Task) ValidateStatus() error {

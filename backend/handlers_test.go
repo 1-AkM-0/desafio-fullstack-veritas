@@ -43,7 +43,10 @@ func TestGetTask(t *testing.T) {
 	t.Run("Get com multiplas tasks", func(t *testing.T) {
 		resetTasks()
 
-		want := []Task{{ID: 1, Title: "Passar no desafio", Description: "passar no desafio da veritas", Status: "Em Progresso"}, {ID: 2, Title: "Nao sei", Description: "To sem criatividade", Status: "Concluído"}}
+		want := []Task{
+			{ID: 1, Title: "Passar no desafio", Description: "passar no desafio da veritas", Status: "doing"},
+			{ID: 2, Title: "Nao sei", Description: "To sem criatividade", Status: "done"},
+		}
 		tasks = want
 		req, _ := http.NewRequest("GET", "/tasks", nil)
 
@@ -73,7 +76,7 @@ func TestPOSTTasks(t *testing.T) {
 	t.Run("POST task válida", func(t *testing.T) {
 		resetTasks()
 
-		taskPayload := []byte(`{"title":"Minha task de teste", "description":"Teste", "status":"A Fazer"}`)
+		taskPayload := []byte(`{"title":"Minha task de teste", "description":"Teste", "status":"todo"}`)
 
 		req, _ := http.NewRequest("POST", "/tasks", bytes.NewBuffer(taskPayload))
 
@@ -118,9 +121,9 @@ func TestUPDATETaks(t *testing.T) {
 	t.Run("PUT com id válido", func(t *testing.T) {
 		resetTasks()
 
-		tasks = append(tasks, Task{ID: 1, Title: "Task que vai ser atualizada", Description: "", Status: "A Fazer"})
+		tasks = append(tasks, Task{ID: 1, Title: "Task que vai ser atualizada", Description: "", Status: "todo"})
 
-		body := []byte(`{"status":"Em Progresso"}`)
+		body := []byte(`{"status":"doing"}`)
 
 		req, _ := http.NewRequest("PUT", "/tasks/1", bytes.NewBuffer(body))
 		req.Header.Set("Content-Type", "application/json")
@@ -136,9 +139,9 @@ func TestUPDATETaks(t *testing.T) {
 	t.Run("PUT com id inválido", func(t *testing.T) {
 		resetTasks()
 
-		tasks = append(tasks, Task{ID: 1, Title: "Task que vai ser atualizada", Description: "", Status: "A Fazer"})
+		tasks = append(tasks, Task{ID: 1, Title: "Task que vai ser atualizada", Description: "", Status: "todo"})
 
-		body := []byte(`{"status":"Em Progresso"}`)
+		body := []byte(`{"status":"doing"}`)
 
 		req, _ := http.NewRequest("PUT", "/tasks/2", bytes.NewBuffer(body))
 		req.Header.Set("Content-Type", "application/json")
@@ -156,7 +159,7 @@ func TestUPDATETaks(t *testing.T) {
 func TestDELETETaks(t *testing.T) {
 	t.Run("DELETE task id válido", func(t *testing.T) {
 		resetTasks()
-		tasks = append(tasks, Task{ID: 1, Title: "Task que vai ser deletada", Description: "", Status: "A Fazer"})
+		tasks = append(tasks, Task{ID: 1, Title: "Task que vai ser deletada", Description: "", Status: "todo"})
 
 		req, _ := http.NewRequest("DELETE", "/tasks/1", nil)
 
@@ -173,7 +176,7 @@ func TestDELETETaks(t *testing.T) {
 	})
 	t.Run("DELETE task id inválido", func(t *testing.T) {
 		resetTasks()
-		tasks = append(tasks, Task{ID: 1, Title: "Task que vai ser deletada", Description: "", Status: "A Fazer"})
+		tasks = append(tasks, Task{ID: 1, Title: "Task que vai ser deletada", Description: "", Status: "todo"})
 
 		req, _ := http.NewRequest("DELETE", "/tasks/2", nil)
 
