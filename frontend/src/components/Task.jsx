@@ -7,9 +7,9 @@ export default function Task({ task, onUpdate, onDelete }) {
   const [editedTitle, setEditedTitle] = useState(task.title)
   const [editedDescription, setEditedDescription] = useState(task.description)
 
-  const STATUS_TODO = "A Fazer"
-  const STATUS_IN_PROGRESS = "Em Progresso"
-  const STATUS_DONE = "Concluido"
+  const STATUS_TODO = "todo"
+  const STATUS_IN_PROGRESS = "doing"
+  const STATUS_DONE = "done"
 
   const handleSave = () => {
     if (!editedTitle) return

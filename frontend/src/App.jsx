@@ -13,7 +13,7 @@ function App() {
     const data = await getTasks()
     setTasks(data)
   }
-  const handleCreateTask = async (title = "teste", description = "", status = "A Fazer") => {
+  const handleCreateTask = async (title = "teste", description = "", status = "todo") => {
     const newTask = await createTask(title, description, status)
     if (newTask) {
       setTasks([...tasks, newTask])
@@ -39,19 +39,19 @@ function App() {
     <div className="flex justify-center gap-6 p-6 min-h-screen bg-gray-200">
       <Column
         title={"A Fazer"}
-        tasks={tasksByStatus("A Fazer")}
+        tasks={tasksByStatus("todo")}
         onUpdate={handleUpdateTask}
         onDelete={handleDeleteTask}
         onAdd={handleCreateTask} />
       <Column
         title={"Em Progresso"}
-        tasks={tasksByStatus("Em Progresso")}
+        tasks={tasksByStatus("doing")}
         onUpdate={handleUpdateTask}
         onDelete={handleDeleteTask}
       />
       <Column
         title={"Concluídas"}
-        tasks={tasksByStatus("Concluido")}
+        tasks={tasksByStatus("done")}
         onUpdate={handleUpdateTask}
         onDelete={handleDeleteTask}
       />
