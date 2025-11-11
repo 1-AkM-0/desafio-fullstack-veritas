@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react"
 import { getTasks, createTask, deleteTask, updateTask } from "./services/taskService";
-import Task from "./components/Task";
 import Column from "./components/Column";
 
 function App() {
