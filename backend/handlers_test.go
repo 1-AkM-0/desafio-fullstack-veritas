@@ -24,9 +24,6 @@ func TestGetTask(t *testing.T) {
 
 		handler.ServeHTTP(rr, req)
 
-		if status := rr.Code; status != http.StatusOK {
-			t.Errorf("status code esperado %v recebido %v", status, http.StatusOK)
-		}
 		if contentType := rr.Header().Get("Content-Type"); contentType != "application/json" {
 			t.Errorf("esperado Content-Type application/json recebido %v", contentType)
 		}
@@ -39,6 +36,8 @@ func TestGetTask(t *testing.T) {
 		if len(got) != 0 {
 			t.Errorf("esperado lista vazia, recebido %v", got)
 		}
+
+		assertStatus(t, rr.Code, http.StatusOK)
 	})
 	t.Run("Get com multiplas tasks", func(t *testing.T) {
 		resetTasks()
@@ -55,9 +54,6 @@ func TestGetTask(t *testing.T) {
 
 		handler.ServeHTTP(rr, req)
 
-		if status := rr.Code; status != http.StatusOK {
-			t.Errorf("handler retornou codigo errado: got %v want %v", status, http.StatusOK)
-		}
 		if contentType := rr.Header().Get("Content-Type"); contentType != "application/json" {
 			t.Errorf("esperado Content-Type application/json recebido %v", contentType)
 		}
@@ -69,6 +65,7 @@ func TestGetTask(t *testing.T) {
 		if !slices.Equal(got, want) {
 			t.Errorf("esperado %v recebido %v", want, got)
 		}
+		assertStatus(t, rr.Code, http.StatusOK)
 	})
 }
 
@@ -86,9 +83,7 @@ func TestPOSTTasks(t *testing.T) {
 
 		handler.ServeHTTP(rr, req)
 		task := tasks[0]
-		if status := rr.Code; status != http.StatusCreated {
-			t.Errorf("handler retornou %v esperado %v ", status, http.StatusCreated)
-		}
+
 		if err := task.Validate(); err != nil {
 			t.Errorf("esperado erro de validação, mas nao retornou nada")
 		}
@@ -96,6 +91,8 @@ func TestPOSTTasks(t *testing.T) {
 		if tasks[0].Title != "Minha task de teste" {
 			t.Errorf("titulo recebido %s esperado %s", tasks[0].Title, "Minha task de teste")
 		}
+
+		assertStatus(t, rr.Code, http.StatusCreated)
 	})
 	t.Run("POST task invalida", func(t *testing.T) {
 		resetTasks()
@@ -108,9 +105,8 @@ func TestPOSTTasks(t *testing.T) {
 		handler := http.HandlerFunc(tasksHandler)
 		handler.ServeHTTP(rr, req)
 
-		if status := rr.Code; status != http.StatusBadRequest {
-			t.Errorf("handler retornou %v esperado %v ", status, http.StatusBadRequest)
-		}
+		assertStatus(t, rr.Code, http.StatusBadRequest)
+
 		if len(tasks) != 0 {
 			t.Errorf("recebido %d tasks esperado 0", len(tasks))
 		}
@@ -132,9 +128,7 @@ func TestUPDATETaks(t *testing.T) {
 		handler := http.HandlerFunc(taskHandler)
 		handler.ServeHTTP(rr, req)
 
-		if status := rr.Code; status != http.StatusNoContent {
-			t.Errorf("handler retornou %v esperado %v", status, http.StatusNoContent)
-		}
+		assertStatus(t, rr.Code, http.StatusNoContent)
 	})
 	t.Run("PUT com id inválido", func(t *testing.T) {
 		resetTasks()
@@ -150,9 +144,7 @@ func TestUPDATETaks(t *testing.T) {
 		handler := http.HandlerFunc(taskHandler)
 		handler.ServeHTTP(rr, req)
 
-		if status := rr.Code; status != http.StatusNotFound {
-			t.Errorf("handler retornou %v esperado %v", status, http.StatusNotFound)
-		}
+		assertStatus(t, rr.Code, http.StatusNotFound)
 	})
 }
 
@@ -167,9 +159,8 @@ func TestDELETETaks(t *testing.T) {
 		handler := http.HandlerFunc(taskHandler)
 		handler.ServeHTTP(rr, req)
 
-		if status := rr.Code; status != http.StatusNoContent {
-			t.Errorf("handler retornou %v esperado %v", status, http.StatusNoContent)
-		}
+		assertStatus(t, rr.Code, http.StatusNoContent)
+
 		if len(tasks) != 0 {
 			t.Errorf("recebido %d tasks esperado 0", len(tasks))
 		}
@@ -184,8 +175,13 @@ func TestDELETETaks(t *testing.T) {
 		handler := http.HandlerFunc(taskHandler)
 		handler.ServeHTTP(rr, req)
 
-		if status := rr.Code; status != http.StatusNotFound {
-			t.Errorf("handler retornou %v esperado %v", status, http.StatusNotFound)
-		}
+		assertStatus(t, rr.Code, http.StatusNotFound)
 	})
+}
+
+func assertStatus(t testing.TB, got, want int) {
+	t.Helper()
+	if got != want {
+		t.Errorf("mensagem de status incorreta, recebida %d, esperada %d", got, want)
+	}
 }
