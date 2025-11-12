@@ -60,7 +60,7 @@ func TestGetTask(t *testing.T) {
 	})
 }
 
-func TestPOSTTasks(t *testing.T) {
+func TestPostTasks(t *testing.T) {
 	t.Run("POST task válida", func(t *testing.T) {
 		s := NewServer()
 		taskPayload := []byte(`{"title":"Minha task de teste", "description":"Teste", "status":"todo"}`)
@@ -103,7 +103,7 @@ func TestPOSTTasks(t *testing.T) {
 	})
 }
 
-func TestUPDATETaks(t *testing.T) {
+func TestUpdateTasks(t *testing.T) {
 	t.Run("PUT com id válido", func(t *testing.T) {
 		s := NewServer()
 		s.store.tasks = append(s.store.tasks, Task{ID: 1, Title: "Task que vai ser atualizada", Description: "", Status: "todo"})
@@ -138,7 +138,7 @@ func TestUPDATETaks(t *testing.T) {
 	})
 }
 
-func TestDELETETaks(t *testing.T) {
+func TestDeleteTasks(t *testing.T) {
 	t.Run("DELETE task id válido", func(t *testing.T) {
 		s := NewServer()
 		s.store.tasks = append(s.store.tasks, Task{ID: 1, Title: "Task que vai ser deletada", Description: "", Status: "todo"})
