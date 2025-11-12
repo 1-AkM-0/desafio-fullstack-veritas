@@ -78,7 +78,7 @@ func (s *Server) handleGetTasks(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleUpdateTasks(w http.ResponseWriter, r *http.Request) {
-	idStr := r.URL.Path[len("/tasks/"):]
+	idStr := r.PathValue("id")
 	id, err := strconv.ParseInt(idStr, 10, 64)
 	index := s.store.FindTaskByID(id)
 	if err != nil {
@@ -104,7 +104,7 @@ func (s *Server) handleUpdateTasks(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleDeleteTask(w http.ResponseWriter, r *http.Request) {
-	idStr := r.URL.Path[len("/tasks/"):]
+	idStr := r.PathValue("id")
 	id, err := strconv.ParseInt(idStr, 10, 64)
 	index := s.store.FindTaskByID(id)
 	if err != nil {
