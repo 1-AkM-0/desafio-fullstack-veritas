@@ -16,7 +16,8 @@ export default function Task({ task, onUpdate, onDelete }) {
 
     onUpdate(task.id, {
       title: editedTitle,
-      description: editedDescription
+      description: editedDescription,
+      status: task.status
     })
     setIsEditing(false)
   }
