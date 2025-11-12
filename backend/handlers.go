@@ -56,21 +56,21 @@ func tasksHandler(w http.ResponseWriter, r *http.Request) {
 
 func taskHandler(w http.ResponseWriter, r *http.Request) {
 	enableCors(w)
+	idStr := r.URL.Path[len("/tasks/"):]
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	index := findTaskById(id)
+	if index == -1 {
+		http.Error(w, "Id não encontrado", http.StatusNotFound)
+		return
+	}
+	if err != nil {
+		http.Error(w, "Erro convertendo string para int", http.StatusInternalServerError)
+		return
+	}
+
 	switch r.Method {
 	case http.MethodPut:
 		var update Task
-		idStr := r.URL.Path[len("/tasks/"):]
-		id, err := strconv.ParseInt(idStr, 10, 64)
-		index := findTaskById(id)
-		if index == -1 {
-			http.Error(w, "Id não encontrado", http.StatusNotFound)
-			return
-		}
-		if err != nil {
-			http.Error(w, "Erro convertendo string para int", http.StatusInternalServerError)
-			return
-		}
-
 		if err := json.NewDecoder(r.Body).Decode(&update); err != nil {
 			http.Error(w, "JSON invalido", http.StatusBadRequest)
 			return
@@ -94,17 +94,6 @@ func taskHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNoContent)
 
 	case http.MethodDelete:
-		idStr := r.URL.Path[len("/tasks/"):]
-		id, err := strconv.ParseInt(idStr, 10, 64)
-		index := findTaskById(id)
-		if index == -1 {
-			http.Error(w, "Id não encontrado", http.StatusNotFound)
-			return
-		}
-		if err != nil {
-			http.Error(w, "Erro convertendo string para int", http.StatusInternalServerError)
-			return
-		}
 		tasks = append(tasks[:index], tasks[index+1:]...)
 		w.WriteHeader(http.StatusNoContent)
 	}
