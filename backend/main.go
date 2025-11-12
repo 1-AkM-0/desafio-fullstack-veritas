@@ -7,8 +7,8 @@ import (
 )
 
 func main() {
-	http.HandleFunc("/tasks", tasksHandler)
-	http.HandleFunc("/tasks/", taskHandler)
+	server := NewServer()
+	router := server.RegisterRoutes()
 	fmt.Println("Server rodando na porta 5000")
-	log.Fatal(http.ListenAndServe(":5000", nil))
+	log.Fatal(http.ListenAndServe(":5000", router))
 }

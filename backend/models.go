@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"sync"
 	"time"
 )
 
@@ -42,4 +43,59 @@ func (t *Task) Validate() error {
 		return err
 	}
 	return nil
+}
+
+type TaskStore struct {
+	mu     sync.RWMutex
+	tasks  []Task
+	lastID int64
+}
+
+func (ts *TaskStore) CreateTask(newTask Task) Task {
+	ts.mu.Lock()
+	ts.lastID++
+	now := time.Now()
+	newTask.CreatedAt = now
+	newTask.UpdatedAt = now
+	newTask.ID = ts.lastID
+	ts.tasks = append(ts.tasks, newTask)
+	ts.mu.Unlock()
+
+	return newTask
+}
+
+func (ts *TaskStore) GetTasks() []Task {
+	ts.mu.RLock()
+	defer ts.mu.RUnlock()
+	return ts.tasks
+}
+
+func (ts *TaskStore) FindTaskByID(id int64) int {
+	ts.mu.Lock()
+	defer ts.mu.Unlock()
+
+	for index, task := range ts.tasks {
+		if task.ID == id {
+			return index
+		}
+	}
+	return -1
+}
+
+func (ts *TaskStore) UpdateTask(index int, update Task) {
+	if update.Title != "" {
+		ts.tasks[index].Title = update.Title
+	}
+	if update.Status != "" {
+		ts.tasks[index].Status = update.Status
+	}
+	if update.Description != "" {
+		ts.tasks[index].Description = update.Description
+	}
+
+	ts.tasks[index].UpdatedAt = time.Now()
+}
+
+func (ts *TaskStore) DeleteTask(index int) {
+	ts.tasks = append(ts.tasks[:index], ts.tasks[index+1:]...)
 }
