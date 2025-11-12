@@ -4,10 +4,12 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"sync"
 	"time"
 )
 
 var (
+	mu     sync.RWMutex
 	tasks  = []Task{}
 	lastID int64
 )
@@ -22,6 +24,8 @@ func tasksHandler(w http.ResponseWriter, r *http.Request) {
 	enableCors(w)
 	switch r.Method {
 	case http.MethodGet:
+		mu.RLock()
+		defer mu.RUnlock()
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		if err := json.NewEncoder(w).Encode(tasks); err != nil {
@@ -39,12 +43,14 @@ func tasksHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
+		mu.Lock()
 		lastID++
 		now := time.Now()
 		newTask.CreatedAt = now
 		newTask.UpdatedAt = now
 		newTask.ID = lastID
 		tasks = append(tasks, newTask)
+		mu.Unlock()
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
@@ -58,13 +64,17 @@ func taskHandler(w http.ResponseWriter, r *http.Request) {
 	enableCors(w)
 	idStr := r.URL.Path[len("/tasks/"):]
 	id, err := strconv.ParseInt(idStr, 10, 64)
+
 	index := findTaskById(id)
-	if index == -1 {
-		http.Error(w, "Id não encontrado", http.StatusNotFound)
+	if err != nil {
+		http.Error(w, "ID invalido na URL", http.StatusBadRequest)
 		return
 	}
-	if err != nil {
-		http.Error(w, "Erro convertendo string para int", http.StatusInternalServerError)
+	mu.Lock()
+	defer mu.Unlock()
+
+	if index == -1 {
+		http.Error(w, "Id não encontrado", http.StatusNotFound)
 		return
 	}
 
