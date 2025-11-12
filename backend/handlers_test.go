@@ -24,9 +24,7 @@ func TestGetTask(t *testing.T) {
 
 		handler.ServeHTTP(rr, req)
 
-		if contentType := rr.Header().Get("Content-Type"); contentType != "application/json" {
-			t.Errorf("esperado Content-Type application/json recebido %v", contentType)
-		}
+		assertContentType(t, rr.Header().Get("Content-Type"), "application/json")
 
 		var got []Task
 		if err := json.NewDecoder(rr.Body).Decode(&got); err != nil {
@@ -54,10 +52,6 @@ func TestGetTask(t *testing.T) {
 
 		handler.ServeHTTP(rr, req)
 
-		if contentType := rr.Header().Get("Content-Type"); contentType != "application/json" {
-			t.Errorf("esperado Content-Type application/json recebido %v", contentType)
-		}
-
 		var got []Task
 		if err := json.NewDecoder(rr.Body).Decode(&got); err != nil {
 			t.Fatal(err)
@@ -65,6 +59,8 @@ func TestGetTask(t *testing.T) {
 		if !slices.Equal(got, want) {
 			t.Errorf("esperado %v recebido %v", want, got)
 		}
+
+		assertContentType(t, rr.Header().Get("Content-Type"), "application/json")
 		assertStatus(t, rr.Code, http.StatusOK)
 	})
 }
@@ -92,6 +88,7 @@ func TestPOSTTasks(t *testing.T) {
 			t.Errorf("titulo recebido %s esperado %s", tasks[0].Title, "Minha task de teste")
 		}
 
+		assertContentType(t, rr.Header().Get("Content-Type"), "application/json")
 		assertStatus(t, rr.Code, http.StatusCreated)
 	})
 	t.Run("POST task invalida", func(t *testing.T) {
@@ -105,11 +102,10 @@ func TestPOSTTasks(t *testing.T) {
 		handler := http.HandlerFunc(tasksHandler)
 		handler.ServeHTTP(rr, req)
 
-		assertStatus(t, rr.Code, http.StatusBadRequest)
-
 		if len(tasks) != 0 {
 			t.Errorf("recebido %d tasks esperado 0", len(tasks))
 		}
+		assertStatus(t, rr.Code, http.StatusBadRequest)
 	})
 }
 
@@ -183,5 +179,12 @@ func assertStatus(t testing.TB, got, want int) {
 	t.Helper()
 	if got != want {
 		t.Errorf("mensagem de status incorreta, recebida %d, esperada %d", got, want)
+	}
+}
+
+func assertContentType(t testing.TB, got, want string) {
+	t.Helper()
+	if got != want {
+		t.Errorf("content-type incorreto, recebido %s, esperado %s", got, want)
 	}
 }
